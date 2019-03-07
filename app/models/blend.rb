@@ -1,0 +1,2 @@
+class Blend < ApplicationRecord
+end
