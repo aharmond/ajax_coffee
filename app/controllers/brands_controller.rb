@@ -8,10 +8,15 @@ class BrandsController < ApplicationController
   def show
   end
 
+  def form
+    @brand = Brand.new
+    render partial: 'form'
+  end
+
   def create
     @brand = Brand.new(brand_params)
     if @brand.save
-      render json(@brand)
+      render json: @brand
     else
       render_error(@brand)
     end
@@ -19,7 +24,7 @@ class BrandsController < ApplicationController
 
   def update
     if @brand.update(brand_params)
-      render json(@brand)
+      render json: @brand
     else
       render_error(@brand)
     end
