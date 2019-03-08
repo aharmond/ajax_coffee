@@ -1,5 +1,6 @@
 var currentBrand = {};
 var showForm = false;
+var editingBrand;
 
 $(document).ready( function() {
   $(document).on('click', '.brand-item', function() {
@@ -20,6 +21,22 @@ $(document).ready( function() {
     });
   });
 
+  $(document).on('click', '#edit-brand', function() {
+    editingBrand = $(this).siblings('.brand-item').data().id
+    toggle();
+  })
+
+  $(document).on('click', '#delete-brand', function() {
+    var id = $(this).siblings('.brand-item').data().id
+    $.ajax({
+      url: '/brands/' + id,
+      method: 'DELETE'
+    }).done( function() {
+      var row = $("[data-id='" + id + "'")
+      row.parent().remove('li');
+    });
+  });
+
   $('#toggle').on('click', function() {
     toggle();
   });
@@ -27,15 +44,21 @@ $(document).ready( function() {
   $(document).on('submit', '#brand-form form', function(e) {
     e.preventDefault();
     var data = $(this).serializeArray();
+    var url = '/brands';
+    var method = 'POST'
+    if(editingBrand) {
+      url = url + '/' + editingBrand;
+      method = 'PUT'
+    }
+
     $.ajax({
-      url: '/brands',
-      type: 'POST',
+      url: url,
+      method: method,
       dataType: 'JSON',
       data: data
     }).done( function(brand) {
-      toggle()
-      var b = '<li class="brand-item" data-id="' + brand.id + '" data-name="' + brand.name + '">' + brand.name + '-' + brand.location + '</li>';
-      $('#brands-list').append(b);
+      toggle();
+      getBrand(brand.id);
     }).fail( function(err) {
       alert(err.responseJSON.errors)
     });
@@ -50,10 +73,26 @@ $(document).ready( function() {
 
       $.ajax({
         url: '/brand_form',
-        method: 'GET'
+        method: 'GET',
+        data: { id: editingBrand }
       }).done( function(html) {
         $('#toggle').after(html);
       });
     }
+  }
+
+  function getBrand(id) {
+    $.ajax({
+      url: '/brands/' + id,
+      method: 'GET'
+    }).done( function(brand) {
+      if (editingBrand) {
+        var li = $("[data-id='" + id + "'")
+        $(li).replaceWith(brand)
+        editingBrand = null
+      } else {
+      $('#brands-list').append(brand);
+      }
+    });
   }
 });

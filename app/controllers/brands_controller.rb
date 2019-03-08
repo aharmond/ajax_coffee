@@ -9,7 +9,7 @@ class BrandsController < ApplicationController
   end
 
   def form
-    @brand = Brand.new
+    @brand = params[:id] ? Brand.find(params[:id]) : Brand.new
     render partial: 'form'
   end
 

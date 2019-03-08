@@ -5,13 +5,7 @@
     <button class="btn" id="toggle">Add Brand<button>
     <ul id="brands-list">
       <% @brands.each do |brand| %>
-        <li 
-          class="brand-item"
-          data-id=<%= brand.id %>
-          data-name="<%= brand.name %>"
-        >
-          <%= brand.name %> - <%= brand.location %>
-        </li>
+        <%= render partial: 'brand', locals: { brand: brand } %>
       <% end %>
     </ul>
   </div>
